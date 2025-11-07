@@ -16,7 +16,7 @@ BENCH_CONCURRENCY ?= 5
 BENCH_WARMUP ?= 20
 BENCH_RPC_TIMEOUT_MS ?= 2000
 
-.PHONY: all build run clean build-test run-test deps fmt lint
+.PHONY: all build run clean build-test run-test deps fmt lint proto
 
 all: build
 
@@ -48,3 +48,7 @@ deps:
 fmt:
 	@echo "Formatting code..."
 	$(GO) fmt ./...
+
+proto:
+	@echo "Generating gRPC and protobuf stubs..."
+	protoc --go_out=pkg/gen --go-grpc_out=pkg/gen proto/user/v1/user.proto

@@ -14,14 +14,12 @@ const (
 	defaultShutdownSeconds = 5
 )
 
-// Config captures runtime configuration for the service.
 type Config struct {
 	HTTPAddr      string
 	GRPCAddr      string
 	ShutdownGrace time.Duration
 }
 
-// Load reads configuration from environment variables, falling back to sane defaults.
 func Load() Config {
 	httpAddr := joinHostPort(lookupEnv("HTTP_HOST", defaultHTTPHost), lookupEnvInt("HTTP_PORT", defaultHTTPPort))
 	grpcAddr := joinHostPort(lookupEnv("GRPC_HOST", defaultGRPCHost), lookupEnvInt("GRPC_PORT", defaultGRPCPort))

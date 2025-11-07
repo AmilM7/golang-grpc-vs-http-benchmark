@@ -10,7 +10,6 @@ import (
 	"golang-grpc/internal/user"
 )
 
-// NewRouter wires Gin routes backed by the provided service.
 func NewRouter(svc *service.Service) *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
@@ -31,23 +30,18 @@ type handler struct {
 	svc *service.Service
 }
 
-type userPayload struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
 func (h *handler) health(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func (h *handler) createUser(c *gin.Context) {
-	var payload userPayload
+	var payload user.Attributes
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON payload"})
 		return
 	}
 
-	created, err := h.svc.Create(c.Request.Context(), payload.Name, payload.Email)
+	created, err := h.svc.Create(c.Request.Context(), payload)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -72,12 +66,12 @@ func (h *handler) getUser(c *gin.Context) {
 
 func (h *handler) updateUser(c *gin.Context) {
 	id := c.Param("id")
-	var payload userPayload
+	var payload user.Attributes
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON payload"})
 		return
 	}
-	updated, err := h.svc.Update(c.Request.Context(), id, payload.Name, payload.Email)
+	updated, err := h.svc.Update(c.Request.Context(), id, payload)
 	if err != nil {
 		handleError(c, err)
 		return

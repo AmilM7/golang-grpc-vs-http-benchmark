@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user.v1;
 
-option go_package = "golang-grpc/pkg/gen/userpb;userpb";
+option go_package = "golang-grpc/user/v1;userv1";
 
 import "google/protobuf/empty.proto";
 
@@ -10,6 +10,11 @@ message User {
   string id = 1;
   string name = 2;
   string email = 3;
+  string phone = 4;
+  string address = 5;
+  string bio = 6;
+  repeated string tags = 7;
+  bytes avatar = 8;
 }
 
 message GetUserRequest {
@@ -19,12 +24,22 @@ message GetUserRequest {
 message CreateUserRequest {
   string name = 1;
   string email = 2;
+  string phone = 3;
+  string address = 4;
+  string bio = 5;
+  repeated string tags = 6;
+  bytes avatar = 7;
 }
 
 message UpdateUserRequest {
   string id = 1;
   string name = 2;
   string email = 3;
+  string phone = 4;
+  string address = 5;
+  string bio = 6;
+  repeated string tags = 7;
+  bytes avatar = 8;
 }
 
 message DeleteUserRequest {

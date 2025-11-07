@@ -89,7 +89,7 @@ func shutdown(ctx context.Context, grpcServer *grpc.Server, httpServer *http.Ser
 		grpcServer.Stop()
 	}
 
-	// Ensure any remaining requests finish before exit.
+	// Ensuring any remaining requests finish before exit
 	time.Sleep(250 * time.Millisecond)
 	log.Println("servers shut down cleanly")
 }

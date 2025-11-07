@@ -1,8 +1,16 @@
 package user
 
-// User represents a user entity exposed by both HTTP and gRPC transports.
+type Attributes struct {
+	Name    string   `json:"name"`
+	Email   string   `json:"email"`
+	Phone   string   `json:"phone"`
+	Address string   `json:"address"`
+	Bio     string   `json:"bio"`
+	Tags    []string `json:"tags"`
+	Avatar  []byte   `json:"avatar"`
+}
+
 type User struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID string `json:"id"`
+	Attributes
 }

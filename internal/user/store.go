@@ -8,42 +8,36 @@ import (
 )
 
 var (
-	// ErrNotFound indicates that the requested user does not exist in the store.
 	ErrNotFound = errors.New("user not found")
 )
 
-// Store is a concurrency-safe, in-memory repository for users.
 type Store struct {
 	mu     sync.RWMutex
 	users  map[string]User
 	nextID int64
 }
 
-// NewStore constructs an empty Store instance.
 func NewStore() *Store {
 	return &Store{
 		users: make(map[string]User),
 	}
 }
 
-// Create persists a new user and returns the created entity.
-func (s *Store) Create(name, email string) User {
+func (s *Store) Create(attrs Attributes) User {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	s.nextID++
 	id := strconv.FormatInt(s.nextID, 10)
 	u := User{
-		ID:    id,
-		Name:  name,
-		Email: email,
+		ID:         id,
+		Attributes: cloneAttributes(attrs),
 	}
 	s.users[id] = u
 	return u
 }
 
-// Update modifies an existing user. ErrNotFound is returned if the user does not exist.
-func (s *Store) Update(id, name, email string) (User, error) {
+func (s *Store) Update(id string, attrs Attributes) (User, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -52,15 +46,13 @@ func (s *Store) Update(id, name, email string) (User, error) {
 		return User{}, ErrNotFound
 	}
 	u := User{
-		ID:    id,
-		Name:  name,
-		Email: email,
+		ID:         id,
+		Attributes: cloneAttributes(attrs),
 	}
 	s.users[id] = u
 	return u, nil
 }
 
-// Get retrieves a user by id.
 func (s *Store) Get(id string) (User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -69,7 +61,6 @@ func (s *Store) Get(id string) (User, bool) {
 	return u, ok
 }
 
-// Delete removes a user by id. It returns true if the user existed.
 func (s *Store) Delete(id string) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -81,7 +72,6 @@ func (s *Store) Delete(id string) bool {
 	return true
 }
 
-// List returns all users sorted by identifier.
 func (s *Store) List() []User {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -99,4 +89,15 @@ func (s *Store) List() []User {
 		return users[i].ID < users[j].ID
 	})
 	return users
+}
+
+func cloneAttributes(attrs Attributes) Attributes {
+	copied := attrs
+	if attrs.Tags != nil {
+		copied.Tags = append([]string(nil), attrs.Tags...)
+	}
+	if attrs.Avatar != nil {
+		copied.Avatar = append([]byte(nil), attrs.Avatar...)
+	}
+	return copied
 }
